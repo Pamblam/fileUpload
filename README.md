@@ -8,6 +8,14 @@ Buttons may be given a “name” attribute and used in a regular form, files wi
 
      $("#mybtn").fileUpload(); 
 
+**To instantiate the button to only accept certain file types:**
+
+This should be a comma separated list of [mime-types] to accept. _For full browser support, the [W3C recommends] that you also include the corresponding file-extention for each given mime-type_.
+
+    $("#mybtn").fileUpload({
+    	accept: "text/plain, .txt"
+    });
+
 **To instantiate the button as a multi file input button:**
 
     $("#mybtn").fileUpload({
@@ -26,8 +34,24 @@ Buttons may be given a “name” attribute and used in a regular form, files wi
 
     var files = $("#mybtn").fileUpload("getFiles"); 
 
+**To get the raw text of the files currently in the input:**
+
+    $("#mybtn").fileUpload("getFileText", function(fileText){
+        console.log(fileText);
+    }); 
+
+**To get the dataURI of the files currently in the input:**
+
+    $("#mybtn").fileUpload("getDataURI", function(dataURI){
+        console.log(dataURI);
+    }); 
+
 **To clear the files currently in the input:**
 
     $("#mybtn").fileUpload("clearFiles");
 
-Here ‘s a jsFiddle: http://jsfiddle.net/z292qwob/
+Here ‘s a [jsFiddle]. Check out the example page for more examples.
+
+[W3C recommends]: https://www.w3.org/TR/html5/forms.html#attr-input-accept
+[jsFiddle]: http://jsfiddle.net/z292qwob/
+[mime-types]: http://www.iana.org/assignments/media-types/media-types.xhtml
