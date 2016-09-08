@@ -1,8 +1,23 @@
 ### fileUpload();
 
-FileUpload is a jQuery plugin that lets you turn a normal button into a file input button that you can style with normal CSS. This is handy 'cus you can’t really style a normal file input.
+**UPDATE: FileUpload now supports drag and drop!**
 
-Buttons may be given a “name” attribute and used in a regular form, files will be passed to the server as if the button was a file input. During instantiation, fileInput method maybe chained, but only during instantiation.
+FileUpload is a jQuery plugin and library that makes it easy to upload or read files on the client side.
+
+## Features
+
+ - Use a button (or anything else you can style with CSS) instead of a real file input. This is handy 'cus you can’t really style a normal file input.
+ - Does not apply any styles whatsoever - you are fully in control of the look and feel of your app.
+ - Built in file-reading capabilities - you don't have to upload a file to a server to use it.
+ - Accept only file types that you want, built in file-type validation.
+ - Set an event handler to be called every time a file is added.
+ - Can accommodate multiple files at a time.
+ - Convert files to a dataURI on the client side.
+ - May add a name attribute to your button and it will submit just like a standard file input. (Drag n' drop files will not be submitted this way though).
+ - Chainable during instantiation.
+ - **NEW:** Now supports Drag n' Drop
+
+## Usage
 
 **To instantiate the button as a file input button:**
 
@@ -49,6 +64,15 @@ This should be a comma separated list of [mime-types] to accept. _For full brows
 **To clear the files currently in the input:**
 
     $("#mybtn").fileUpload("clearFiles");
+
+**To set the drop zone for Drag n' Drop**
+
+    $("#ultext").fileUpload({
+		dragArea: "#dragarea",        // a CSS selector for the drop zone div
+		dragEnterClass: "dragover"    // a CSS class name that will be applied 
+                                      // to the drop zone when  user hovers
+                                      // a file over the drop zone
+	});
 
 Here ‘s a [jsFiddle]. Check out the example page for more examples.
 

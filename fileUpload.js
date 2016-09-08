@@ -12,8 +12,15 @@
         self.input = null;
         self.files = null;
         self.onChange = typeof params.change === "function" ? params.change : function() {};
-
-        this.init = function() {
+		self.dragEnterClassName = "dragEnter";
+		self.acceptedTypes = "";
+		
+		self.dragNdropEnabled = function() {
+			var div = document.createElement('div');
+			return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
+		};
+		
+        self.init = function() {
             var guid = Math.floor(Math.random() * 9999999999999) + 1;
             self.id = "FU_" + guid;
 
@@ -21,18 +28,22 @@
             var name = $(button).prop("name");
             $(button).removeAttr("name");
 
+			// set drag n drop stuff
+			if(undefined !== params.dragEnterClass) self.dragEnterClassName = params.dragEnterClass;
+			if(undefined !== params.dragArea) self.dragArea(params.dragArea);
+
             // make a hidden file input
             var m = (typeof params.multi !== 'undefined' && params.multi) ? "multiple" : "";
-			var accept = (typeof params.accept !== 'undefined' && params.accept) ? params.accept : "";
-            var fi = $('<input type="file" name="' + name + '" id="' + self.id + '" accept="' + accept + '" style="opacity:0; position:absolute;" ' + m + '/>');
+			self.acceptedTypes = (typeof params.accept !== 'undefined' && params.accept) ? params.accept : "";
+            var fi = $('<input type="file" name="' + name + '" id="' + self.id + '" accept="' + self.acceptedTypes + '" style="opacity:0; position:absolute;" ' + m + '/>');
             self.input = fi[0];
             $(self.input).insertAfter(button);
 
             self.setHandlers();
         };
-
+		
         // clear the input
-        this.clearFiles = function() {
+        self.clearFiles = function() {
             if (self.input.value) {
                 try {
                     self.input.value = '';
@@ -56,18 +67,21 @@
             });
 
             $(self.input).unbind("change").change(function(e) {
-                self.files = e.target.files;
+				if(!self.files) self.files = [];
+                for(var i=0; i<e.target.files.length; i++)
+					self.files.push(e.target.files[i]);
+				if(!self.files.length) self.files = null;
                 self.onChange();
             });
         };
 
         // get files
-        this.getFiles = function() {
+        self.getFiles = function() {
             return self.files;
         };
 		
 		// get the text of the file
-		this.getFileText = function(cb){
+		self.getFileText = function(cb){
 			if (window.File && window.FileReader && window.FileList && window.Blob) {
 				for(var i=0; i<self.files.length; i++){
 					var f = self.files[i];
@@ -83,7 +97,7 @@
 		};
 		
 		// get the dataURI of the file
-		this.getDataURI = function(cb){
+		self.getDataURI = function(cb){
 			if (window.File && window.FileReader && window.FileList && window.Blob) {
 				for(var i=0; i<self.files.length; i++){
 					var f = self.files[i];
@@ -97,7 +111,33 @@
 			} else return false;
 			return true;
 		};
-
+		
+		// set a classname to be applied when user drags file into input
+		self.dragEnterClass = function(className){
+			self.dragEnterClassName = className;
+		};
+		
+		// set the drag and drop area
+		self.dragArea = function(selector){
+			if(!self.dragNdropEnabled) return false;
+			$(selector).on('drag dragstart dragend dragover dragenter dragleave drop', function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+			}).on('dragover dragenter', function () {
+				$(selector).addClass(self.dragEnterClassName);
+			}).on('dragleave dragend drop', function () {
+				$(selector).removeClass(self.dragEnterClassName);
+			}).on('drop', function (e) {
+				var droppedFiles = e.originalEvent.dataTransfer.files;
+				if(!self.files) self.files = [];
+                for(var i=0; i<droppedFiles.length; i++)
+					if(self.acceptedTypes === "" || self.acceptedTypes.indexOf(droppedFiles[i].type)>-1)
+						self.files.push(droppedFiles[i]);
+				if(!self.files.length) self.files = null;
+                self.onChange();
+			});
+		};
+		
         self.init();
     }
 

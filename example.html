@@ -31,6 +31,17 @@
 				background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
 				text-decoration: none;
 			}
+			
+			#dragarea{
+				width: 150px;
+				height: 150px;
+				border-radius: 1em;
+				border: 3px dotted black;
+			}
+			
+			#ultext{ color:blue; cursor: pointer; }
+			
+			.dragover{ background-color: blue; }
 		</style>
 	</head>
 	<body>
@@ -43,6 +54,13 @@
 		<h3>Image Preview</h3>
 		<button id="ipb">Add an image file</button><br>
 		<div id="ipt">Choose an image first</div>
+		<hr>
+		
+		<h3>Drag and drop</h3>
+		<div id="dragarea">
+			Drag an image into this box or <span id="ultext">click here</span>.
+		</div>
+		<div id="dragareadisplay">No images chosen</div>
 		<hr>
 		
 		<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
@@ -67,6 +85,20 @@
 						$("#ipb").fileUpload("getDataURI", function(dataURI){
 							$("<img>").attr("src", dataURI).appendTo("#ipt");
 						});
+					}
+				});
+				
+				// drag n drop example
+				$("#ultext").fileUpload({
+					accept: "image/gif, image/png, image/jpeg, .png, .gif, .jpg",
+					dragArea: "#dragarea",
+					dragEnterClass: "dragover",
+					change: function(){
+						var f = [];
+						var files = $("#ultext").fileUpload("getFiles");
+						for(var i=0; i<files.length; i++) f.push(files[i].name);
+						$("#dragareadisplay").html(f.join(", "));
+						if(!files.length) $("#dragareadisplay").html("No files chosen");
 					}
 				});
 				
