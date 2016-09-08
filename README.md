@@ -77,5 +77,5 @@ This should be a comma separated list of [mime-types] to accept. _For full brows
 Here ‘s a [jsFiddle]. Check out the example page for more examples.
 
 [W3C recommends]: https://www.w3.org/TR/html5/forms.html#attr-input-accept
-[jsFiddle]: http://jsfiddle.net/z292qwob/
+[jsFiddle]: http://jsfiddle.net/znnhx99v/
 [mime-types]: http://www.iana.org/assignments/media-types/media-types.xhtml
