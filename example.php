@@ -1,6 +1,6 @@
 <?php
 
-require "./fileUpload/fileUpload.php";
+require "./fileUpload.php";
 $files = fileUpload::getFiles();
 if(!empty($files)){
 	$return = array();
@@ -88,7 +88,7 @@ if(!empty($files)){
 		<hr>
 		
 		<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-		<script src="./fileUpload/fileUpload.js"></script>
+		<script src="./fileUpload.js"></script>
 		<script>
 			$(function(){
 				
