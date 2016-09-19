@@ -1,6 +1,7 @@
 ### fileUpload();
 
 **UPDATE: FileUpload now supports drag and drop!**
+
 **UPDATE: FileUpload now supports uploading and includes a server-side helper class!**
 
 FileUpload is a jQuery plugin and library that makes it easy to upload or read files on the client side.
