@@ -1,4 +1,22 @@
-<!DOCTYPE html>
+<?php
+
+require "./fileUpload/fileUpload.php";
+$files = fileUpload::getFiles();
+if(!empty($files)){
+	$return = array();
+	foreach($files as $file){
+		$return[] = array(
+			"name" => $file->getName(),
+			"moved" => $file->moveTo("/uploads"),
+			"error" => $file->getError()
+		);
+	}
+	header("Content-Type: application/json");
+	echo json_encode($return);
+	exit;
+}
+
+?><!DOCTYPE html>
 <html>
 	<head>
 		<title>fileUpload Example</title>
@@ -63,8 +81,14 @@
 		<div id="dragareadisplay">No images chosen</div>
 		<hr>
 		
+		<h3>Upload to Server</h3>
+		<button id="chooser">Choose File(s)</button>
+		<button id="doUpload">Upload</button>
+		<div id="uploaddisplay">No files chosen</div>
+		<hr>
+		
 		<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-		<script src="./fileUpload.js"></script>
+		<script src="./fileUpload/fileUpload.js"></script>
 		<script>
 			$(function(){
 				
@@ -100,6 +124,31 @@
 						$("#dragareadisplay").html(f.join(", "));
 						if(!files.length) $("#dragareadisplay").html("No files chosen");
 					}
+				});
+				
+				// upload to server example
+				$("#chooser").fileUpload({
+					multi: true,
+					url: "example.php",
+					change: function(){
+						$("#uploaddisplay").text("0%");
+					},
+					progress: function(percent){
+						$("#uploaddisplay").text(percent+"% complete");
+					},
+					uploaded: function(r){
+						var str = "";
+						for(var i=r.length; i--;){
+							str += "File: "+r[i].name+"\n";
+							str += "Moved: "+(r[i].success?"yes":"no")+"\n";
+							if(!r[i].success) str += "Error: "+r[i].error+"\n";
+							str += "----\n";
+						}
+						alert(str);
+					}
+				});
+				$("#doUpload").click(function(){
+					$("#chooser").fileUpload("upload");
 				});
 				
 			});

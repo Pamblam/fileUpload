@@ -15,7 +15,9 @@ FileUpload is a jQuery plugin and library that makes it easy to upload or read f
  - Convert files to a dataURI on the client side.
  - May add a name attribute to your button and it will submit just like a standard file input. (Drag n' drop files will not be submitted this way though).
  - Chainable during instantiation.
- - **NEW:** Now supports Drag n' Drop
+ - **NEW:** Now features Drag n' Drop.
+ - **NEW:** Now features built-in ajax file-uploading. 
+ - **NEW:** Now includes PHP upload helper class for the back-end.
 
 ## Usage
 
@@ -73,6 +75,50 @@ This should be a comma separated list of [mime-types] to accept. _For full brows
                                       // to the drop zone when  user hovers
                                       // a file over the drop zone
 	});
+
+**To upload files**
+
+	$("#chooser").fileUpload({
+		multi: true,
+		url: "example.php",
+		// Update a progress bar or something
+		progress: function(percent){
+			$("#uploaddisplay").text(percent+"% complete");
+		},
+		// When upload is finished
+		uploaded: function(r){
+			alert("All done!");
+		}
+	});
+
+	// A button to start the upload
+	$("#doUpload").click(function(){
+		$("#chooser").fileUpload("upload");
+	});
+
+# Server Side Implementation
+
+Files are passed to the server in the `$_FILES['fileUploadFiles']` array. You can handle them yourself, or you can utilize the included `fileUpload` class, which provides an easy interface for handling the uploads.
+
+The `fileUpload` PHP class has only one static method, `fileUpload::getFiles()`, which returns an array of `uploadedFile` objects. Each `uploadedFile` object contains a set of useful methods to help handle your files. Methods include: `getName()`, `getType()`, `getSize()`, `getTmpName()`, `getError()`, `moveTo($newLocation)`, and `getContents()`.
+
+**Example server side implementation:**
+
+	require "./fileUpload/fileUpload.php";
+	$files = fileUpload::getFiles();
+	if(!empty($files)){
+		$return = array();
+		foreach($files as $file){
+			$return[] = array(
+				"name" => $file->getName(),
+				"moved" => $file->moveTo("/uploads"),
+				"error" => $file->getError()
+			);
+		}
+		header("Content-Type: application/json");
+		echo json_encode($return);
+		exit;
+	}
 
 Here ‘s a [jsFiddle]. Check out the example page for more examples.
 

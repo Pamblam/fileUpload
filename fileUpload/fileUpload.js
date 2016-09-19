@@ -12,8 +12,11 @@
         self.input = null;
         self.files = null;
         self.onChange = typeof params.change === "function" ? params.change : function() {};
+		self.onProgress = typeof params.progress === "function" ? params.progress : function() {};
+		self.onUploaded = typeof params.uploaded === "function" ? params.uploaded : function() {};
 		self.dragEnterClassName = "dragEnter";
 		self.acceptedTypes = "";
+		self.url = typeof params.url === "string" ? params.url : ""+window.location;
 		
 		self.dragNdropEnabled = function() {
 			var div = document.createElement('div');
@@ -138,19 +141,50 @@
 			});
 		};
 		
+		// Upload the files
+		self.upload = function(){
+			var formData = new FormData();
+			for(var i=self.files.length; i--;)
+				formData.append('fileUploadFiles[]', self.files[i], self.files[i].name);
+			$.ajax({
+				url: self.url,
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				xhr: function () {
+					var xhr = window.XMLHttpRequest ? new window.XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+					xhr.upload.addEventListener("progress", function (evt) {
+						if (evt.lengthComputable) {
+							var percentComplete = evt.loaded / evt.total;
+							percentComplete = parseInt(percentComplete * 100);
+							self.onProgress(percentComplete);
+						}
+					}, false);
+					return xhr;
+				}
+			}).always(function(xhr){
+				self.onUploaded(xhr.responseText===undefined?xhr:xhr.responseText);
+			});
+		};
+		
         self.init();
     }
 
     // throw it all on top of the jQuery object.
     $.fn.fileUpload = function(p, pp) {
-        if (this.length === 1 && typeof p === "string" && $(this[0]).data('fuInstance') !== 'undefined')
-            return $(this).data('fuInstance')[p](pp);
-
-        return this.each(function() {
-            params = typeof p === 'object' ? p : {};
-            if (typeof $(this).data('fuInstance') === 'undefined')
-                $(this).data('fuInstance', new fileUpload(this, params));
-        });
+		if(this.length === 1 && typeof p === "string" && $(this[0]).data('fuInstance') !== 'undefined'){
+			if(undefined === pp)
+				return $(this).data('fuInstance')[p]();
+			else
+				return $(this).data('fuInstance')[p](pp);
+		}else{
+			return this.each(function() {
+				params = typeof p === 'object' ? p : {};
+				if (typeof $(this).data('fuInstance') === 'undefined')
+					$(this).data('fuInstance', new fileUpload(this, params));
+			});
+		}
     };
 
 })(jQuery);
