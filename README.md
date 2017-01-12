@@ -1,9 +1,5 @@
 ### fileUpload();
 
-**UPDATE: FileUpload now supports drag and drop!**
-
-**UPDATE: FileUpload now supports uploading and includes a server-side helper class!**
-
 FileUpload is a jQuery plugin and library that makes it easy to upload or read files on the client side.
 
 ## Features
@@ -125,5 +121,5 @@ The `fileUpload` PHP class has only one static method, `fileUpload::getFiles()`,
 Here ‘s a [jsFiddle]. Check out the example page for more examples.
 
 [W3C recommends]: https://www.w3.org/TR/html5/forms.html#attr-input-accept
-[jsFiddle]: http://jsfiddle.net/znnhx99v/
+[jsFiddle]: http://jsfiddle.net/znnhx99v/2/
 [mime-types]: http://www.iana.org/assignments/media-types/media-types.xhtml
