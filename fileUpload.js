@@ -16,6 +16,7 @@
 		self.onUploaded = typeof params.uploaded === "function" ? params.uploaded : function() {};
 		self.dragEnterClassName = "dragEnter";
 		self.acceptedTypes = "";
+		self.multi = false;
 		self.url = typeof params.url === "string" ? params.url : ""+window.location;
 		
 		self.dragNdropEnabled = function() {
@@ -36,7 +37,8 @@
 			if(undefined !== params.dragArea) self.dragArea(params.dragArea);
 
             // make a hidden file input
-            var m = (typeof params.multi !== 'undefined' && params.multi) ? "multiple" : "";
+			self.multi = !!params.multi;
+            var m = (self.multi) ? "multiple" : "";
 			self.acceptedTypes = (typeof params.accept !== 'undefined' && params.accept) ? params.accept : "";
             var fi = $('<input type="file" name="' + name + '" id="' + self.id + '" accept="' + self.acceptedTypes + '" style="opacity:0; position:absolute;" ' + m + '/>');
             self.input = fi[0];
@@ -70,7 +72,7 @@
             });
 
             $(self.input).unbind("change").change(function(e) {
-				if(!self.files) self.files = [];
+				if(!self.files || !self.multi) self.files = [];
                 for(var i=0; i<e.target.files.length; i++)
 					self.files.push(e.target.files[i]);
 				if(!self.files.length) self.files = null;
@@ -172,7 +174,7 @@
     }
 
     // throw it all on top of the jQuery object.
-    $.fn.fileUpload = function(p, pp) {
+    $.fn.fileUpload = function(p, pp){
 		if(this.length === 1 && typeof p === "string" && $(this[0]).data('fuInstance') !== 'undefined'){
 			if(undefined === pp)
 				return $(this).data('fuInstance')[p]();
