@@ -13,9 +13,9 @@ FileUpload is a jQuery plugin and library that makes it easy to upload or read f
  - Convert files to a dataURI on the client side.
  - May add a name attribute to your button and it will submit just like a standard file input. (Drag n' drop files will not be submitted this way though).
  - Chainable during instantiation.
- - **NEW:** Now features Drag n' Drop.
- - **NEW:** Now features built-in ajax file-uploading. 
- - **NEW:** Now includes PHP upload helper class for the back-end.
+ - Supports Drag n' Drop.
+ - Built-in ajax file-uploading. 
+ - Includes PHP upload helper class for the back-end.
 
 ## Usage
 
