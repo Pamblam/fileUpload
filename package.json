@@ -1,0 +1,31 @@
+{
+  "name": "file-upload",
+  "version": "1.2.0",
+  "description": "light-weight client-side file handler plugin for jQuery",
+  "main": "fileUpload.js",
+  "scripts": {
+    "test": "echo 'hello, world!'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://pamblam@github.com/Pamblam/fileUpload.git"
+  },
+  "keywords": [
+    "files",
+    "upload",
+    "client-size",
+    "ajax",
+    "file",
+    "datauri"
+  ],
+  "author": "Pamblam",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/Pamblam/fileUpload/issues"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-uglify": "^3.1.0",
+    "grunt-string-replace": "^1.3.1"
+  }
+}

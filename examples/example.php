@@ -1,6 +1,6 @@
 <?php
 
-require "./fileUpload.php";
+require "../fileUpload.php";
 $files = fileUpload::getFiles();
 if(!empty($files)){
 	$return = array();
@@ -88,7 +88,7 @@ if(!empty($files)){
 		<hr>
 		
 		<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-		<script src="./fileUpload.js"></script>
+		<script src="../fileUpload.js"></script>
 		<script>
 			$(function(){
 				
@@ -106,8 +106,9 @@ if(!empty($files)){
 				$("#ipb").fileUpload({
 					accept: "image/gif, image/png, image/jpeg, .png, .gif, .jpg",
 					change: function(){
-						$("#ipb").fileUpload("getDataURI", function(dataURI){
-							$("<img>").attr("src", dataURI).appendTo("#ipt");
+						$(this).fileUpload("getDataURI", function(dataURI){
+							$("#ipt").empty();
+							$("<img style='max-width:150px; max-height:150px;'>").attr("src", dataURI).appendTo("#ipt");
 						});
 					}
 				});
