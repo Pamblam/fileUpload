@@ -1,6 +1,6 @@
 {
   "name": "file-upload",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "light-weight client-side file handler plugin for jQuery",
   "main": "fileUpload.js",
   "scripts": {

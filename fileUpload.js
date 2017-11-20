@@ -1,7 +1,7 @@
 /**
  * fileUpload plugin for jQuery
  * Do What The Fuck You Want To Public License wtfpl.org
- * Version "1.2.0"
+ * Version "1.2.1"
  */
 (function($) {
 
@@ -67,7 +67,7 @@
                 for(var i=0; i<e.target.files.length; i++)
 					self.files.push(e.target.files[i]);
 				if(!self.files.length) self.files = null;
-                self.onChange.call(button);
+                self.onChange();
             });
         };
 
@@ -130,7 +130,7 @@
 					if(self.acceptedTypes === "" || self.acceptedTypes.indexOf(droppedFiles[i].type)>-1)
 						self.files.push(droppedFiles[i]);
 				if(!self.files.length) self.files = null;
-                self.onChange.call(button);
+                self.onChange();
 			});
 		};
 		
@@ -151,13 +151,13 @@
 						if (evt.lengthComputable) {
 							var percentComplete = evt.loaded / evt.total;
 							percentComplete = parseInt(percentComplete * 100);
-							self.onProgress.call(button, percentComplete);
+							self.onProgress(percentComplete);
 						}
 					}, false);
 					return xhr;
 				}
 			}).always(function(xhr){
-				self.onUploaded.call(button, xhr.responseText===undefined?xhr:xhr.responseText);
+				self.onUploaded(xhr.responseText===undefined?xhr:xhr.responseText);
 			});
 		};
 		
@@ -167,7 +167,7 @@
     // throw it all on top of the jQuery object.
     $.fn.fileUpload = function(p, pp){
 		if(this.length === 1 && typeof p === "string" && $(this[0]).data('fuInstance') !== 'undefined'){
-			return $(this[0]).data('fuInstance')[p].call(this[0], pp);
+			return $(this).data('fuInstance')[p](pp);
 		}else{
 			return this.each(function() {
 				params = typeof p === 'object' ? p : {};

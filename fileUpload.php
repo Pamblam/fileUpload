@@ -4,7 +4,7 @@
  * fileUpload plugin for jQuery
  * -- Server side helper --
  * Do What The Fuck You Want To Public License wtfpl.org
- * Version "1.2.0"
+ * Version "1.2.1"
  */
 class fileUpload{
 	public static function getFiles(){
