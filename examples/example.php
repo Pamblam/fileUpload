@@ -104,12 +104,14 @@ if(!empty($files)){
 				
 				// Image preview example
 				$("#ipb").fileUpload({
+					multi: true,
 					accept: "image/gif, image/png, image/jpeg, .png, .gif, .jpg",
 					change: function(){
+						$("#ipt").empty();
 						$(this).fileUpload("getDataURI", function(dataURI){
-							$("#ipt").empty();
 							$("<img style='max-width:150px; max-height:150px;'>").attr("src", dataURI).appendTo("#ipt");
 						});
+						$(this).fileUpload('clearFiles');
 					}
 				});
 				

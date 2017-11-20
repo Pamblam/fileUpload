@@ -50,19 +50,9 @@
 		
         // clear the input
         self.clearFiles = function() {
-            if (self.input.value) {
-                try {
-                    self.input.value = '';
-                } catch (err) {}
-                if (self.input.value) {
-                    var form = document.createElement('form'),
-                        parentNode = self.input.parentNode,
-                        ref = self.input.nextSibling;
-                    form.appendChild(self.input);
-                    form.reset();
-                    parentNode.insertBefore(self.input, ref);
-                }
-            }
+			self.files = [];
+			self.input.value = '';
+			return;
         };
 
         //set event handlers
