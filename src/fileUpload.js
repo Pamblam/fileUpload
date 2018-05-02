@@ -19,155 +19,177 @@
 		self.acceptedTypes = "";
 		self.multi = false;
 		self.url = typeof params.url === "string" ? params.url : ""+window.location;
+		self.context = button || params.dragArea;
 		
-		self.dragNdropEnabled = function() {
-			var div = document.createElement('div');
-			return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
-		};
+		var guid = Math.floor(Math.random() * 9999999999999) + 1;
+		self.id = "FU_" + guid;
+
+		// get name
+		var name = 'fileUploadFile';
+		if(button){
+			name = $(button).prop("name");
+			$(button).removeAttr("name");
+		}
+		if(params.name) name = params.name;	
 		
-        self.init = function() {
-            var guid = Math.floor(Math.random() * 9999999999999) + 1;
-            self.id = "FU_" + guid;
+		// set drag n drop stuff
+		if(undefined !== params.dragEnterClass) self.dragEnterClassName = params.dragEnterClass;
+		if(undefined !== params.dragArea) self.dragArea(params.dragArea);
 
-            // get name
-            var name = $(button).prop("name");
-            $(button).removeAttr("name");
-
-			// set drag n drop stuff
-			if(undefined !== params.dragEnterClass) self.dragEnterClassName = params.dragEnterClass;
-			if(undefined !== params.dragArea) self.dragArea(params.dragArea);
-
-            // make a hidden file input
-			self.multi = !!params.multi;
-            var m = (self.multi) ? "multiple" : "";
-			self.acceptedTypes = (typeof params.accept !== 'undefined' && params.accept) ? params.accept : "";
-            var fi = $('<input type="file" name="' + name + '" id="' + self.id + '" accept="' + self.acceptedTypes + '" style="opacity:0; position:absolute;" ' + m + '/>');
-            self.input = fi[0];
-            $(self.input).insertAfter(button);
-
-            self.setHandlers();
-        };
+		// make a hidden file input
+		self.multi = !!params.multi;
+		var m = (self.multi) ? "multiple" : "";
+		self.acceptedTypes = (typeof params.accept !== 'undefined' && params.accept) ? params.accept : "";
+		var fi = $('<input type="file" name="' + name + '" id="' + self.id + '" accept="' + self.acceptedTypes + '" style="z-index:-999999; opacity:0; position:absolute;" ' + m + '/>');
+		self.input = fi[0];
 		
-        // clear the input
-        self.clearFiles = function() {
-			self.files = [];
-			self.input.value = '';
-			return;
-        };
+		// determine where to put the invisible input
+		if(params.form) $(self.input).insertAfter(params.form);
+		else if(button) $(self.input).insertAfter(button);
+		else if(params.dragArea) $(self.input).insertAfter(params.dragArea);
+		else $(body).append(self.input);
 
-        //set event handlers
-        self.setHandlers = function() {
-            $(button).unbind("click").click(function(e) {
-                e.preventDefault();
-                self.input.click();
-            });
-
-            $(self.input).unbind("change").change(function(e) {
-				if(!self.files || !self.multi) self.files = [];
-                for(var i=0; i<e.target.files.length; i++)
-					self.files.push(e.target.files[i]);
-				if(!self.files.length) self.files = null;
-                self.onChange();
-            });
-        };
-
-        // get files
-        self.getFiles = function() {
-            return self.files;
-        };
-		
-		// get the text of the file
-		self.getFileText = function(cb){
-			if (window.File && window.FileReader && window.FileList && window.Blob) {
-				for(var i=0; i<self.files.length; i++){
-					var f = self.files[i];
-					if(!f) continue;
-					var r = new FileReader;
-					r.onload = function(e){
-						cb(e.target.result);
-					};
-					r.readAsText(f);
-				}
-			} else return false;
-			return true;
-		};
-		
-		// get the dataURI of the file
-		self.getDataURI = function(cb){
-			if (window.File && window.FileReader && window.FileList && window.Blob) {
-				for(var i=0; i<self.files.length; i++){
-					var f = self.files[i];
-					if(!f) continue;
-					var r = new FileReader;
-					r.onload = function(e){
-						cb(e.target.result);
-					};
-					r.readAsDataURL(f);
-				}
-			} else return false;
-			return true;
-		};
-		
-		// set a classname to be applied when user drags file into input
-		self.dragEnterClass = function(className){
-			self.dragEnterClassName = className;
-		};
-		
-		// set the drag and drop area
-		self.dragArea = function(selector){
-			if(!self.dragNdropEnabled) return false;
-			$(selector).on('drag dragstart dragend dragover dragenter dragleave drop', function (e) {
+		// Event listeners
+		if(button){
+			$(button).click(function(e) {
 				e.preventDefault();
-				e.stopPropagation();
-			}).on('dragover dragenter', function () {
-				$(selector).addClass(self.dragEnterClassName);
-			}).on('dragleave dragend drop', function () {
-				$(selector).removeClass(self.dragEnterClassName);
-			}).on('drop', function (e) {
-				var droppedFiles = e.originalEvent.dataTransfer.files;
-				if(!self.files) self.files = [];
-                for(var i=0; i<droppedFiles.length; i++)
-					if(self.acceptedTypes === "" || self.acceptedTypes.indexOf(droppedFiles[i].type)>-1)
-						self.files.push(droppedFiles[i]);
-				if(!self.files.length) self.files = null;
-                self.onChange();
+				self.input.click();
 			});
-		};
+		}
+
+		$(self.input).unbind("change").change(function(e) {
+			if(!self.files || !self.multi) self.files = [];
+			for(var i=0; i<e.target.files.length; i++)
+				self.files.push(e.target.files[i]);
+			if(!self.files.length) self.files = null;
+			self.onChange.call(self.context, e);
+		});
+	}
+	
+	fileUpload.prototype.dragNdropEnabled = function() {
+		var div = document.createElement('div');
+		return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
+	};
 		
-		// Upload the files
-		self.upload = function(){
-			var formData = new FormData();
-			for(var i=self.files.length; i--;)
-				formData.append('fileUploadFiles[]', self.files[i], self.files[i].name);
-			$.ajax({
-				url: self.url,
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				xhr: function () {
-					var xhr = window.XMLHttpRequest ? new window.XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-					xhr.upload.addEventListener("progress", function (evt) {
-						if (evt.lengthComputable) {
-							var percentComplete = evt.loaded / evt.total;
-							percentComplete = parseInt(percentComplete * 100);
-							self.onProgress(percentComplete);
-						}
-					}, false);
-					return xhr;
+    // clear the input
+    fileUpload.prototype.clearFiles = function() {
+		this.files = [];
+		this.input.value = '';
+		return;
+	};
+
+    // get files
+    fileUpload.prototype.getFiles = function() {
+        return this.files;
+    };
+		
+	// get the text of the file
+	fileUpload.prototype.getFileText = function(cb){
+		if (window.File && window.FileReader && window.FileList && window.Blob) {
+			for(var i=0; i<this.files.length; i++){
+				var f = this.files[i];
+				if(!f) continue;
+				var r = new FileReader;
+				r.onload = function(e){
+					cb(e.target.result);
+				};
+				r.readAsText(f);
+			}
+		} else return false;
+		return true;
+	};
+		
+	// get the dataURI of the file
+	fileUpload.prototype.getDataURI = function(cb){
+		if (window.File && window.FileReader && window.FileList && window.Blob) {
+			for(var i=0; i<this.files.length; i++){
+				var f = this.files[i];
+				if(!f) continue;
+				var r = new FileReader;
+				r.onload = function(e){
+					cb(e.target.result);
+				};
+				r.readAsDataURL(f);
+			}
+		} else return false;
+		return true;
+	};
+		
+	// set a classname to be applied when user drags file into input
+	fileUpload.prototype.dragEnterClass = function(className){
+		this.dragEnterClassName = className;
+	};
+		
+	// set the drag and drop area
+	fileUpload.prototype.dragArea = function(selector){
+		var self = this;
+		if(!self.dragNdropEnabled) return false;
+		$(selector).on('drag dragstart dragend dragover dragenter dragleave drop', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+		}).on('dragover dragenter', function () {
+			$(selector).addClass(self.dragEnterClassName);
+		}).on('dragleave dragend drop', function () {
+			$(selector).removeClass(self.dragEnterClassName);
+		}).on('drop', function (e) {
+			var droppedFiles = e.originalEvent.dataTransfer.files;
+			if(!self.files) self.files = [];
+			var added = 0;
+			for(var i=0; i<droppedFiles.length; i++){
+				var ext = droppedFiles[i].name.split(".").pop();
+				if(self.acceptedTypes === "" || self.acceptedTypes.indexOf(droppedFiles[i].type)>-1 || self.acceptedTypes.indexOf(ext)>-1 || self.acceptedTypes.indexOf('.'+ext)>-1){
+					if(!self.multi) self.files = [];
+					self.files.push(droppedFiles[i]);
+					added++;
+					if(!self.multi) break;
 				}
-			}).always(function(xhr){
-				self.onUploaded(xhr.responseText===undefined?xhr:xhr.responseText);
-			});
-		};
+			}
+			if(!self.files.length) self.files = null;
+			if(added) self.onChange.call(self.context, e);
+		});
+	};
 		
-        self.init();
-    }
+	// Upload the files
+	fileUpload.prototype.upload = function(){
+		var self = this;
+		var formData = new FormData();
+		for(var i=self.files.length; i--;)
+			formData.append('fileUploadFiles[]', self.files[i], self.files[i].name);
+		$.ajax({
+			url: self.url,
+			type: 'POST',
+			data: formData,
+			processData: false,
+			contentType: false,
+			xhr: function () {
+				var xhr = window.XMLHttpRequest ? new window.XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+				xhr.upload.addEventListener("progress", function (evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = evt.loaded / evt.total;
+						percentComplete = parseInt(percentComplete * 100);
+						self.onProgress.call(self.context, percentComplete, evt);
+					}
+				}, false);
+				return xhr;
+			}
+		}).always(function(xhr){
+			self.onUploaded.call(self.context, xhr.responseText===undefined?xhr:xhr.responseText);
+		});
+	};
+
+	$.fileUpload = function(opts){
+		// to do... make it instantiate like this
+		// added a name paramter, 
+		// made button optional as long as drag area exists
+		// addeda  form paramter... input is appended to form 
+		// change name to fileInput
+		// emit events instead of passing callbacks into the constructor
+	};
 
     // throw it all on top of the jQuery object.
     $.fn.fileUpload = function(p, pp){
-		if(this.length === 1 && typeof p === "string" && $(this[0]).data('fuInstance') !== 'undefined'){
-			return $(this).data('fuInstance')[p](pp);
+		if(this.length === 1 && typeof p === "string" && this.data('fuInstance') !== 'undefined'){
+			return this.data('fuInstance')[p](pp);
 		}else{
 			return this.each(function() {
 				params = typeof p === 'object' ? p : {};

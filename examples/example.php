@@ -7,7 +7,7 @@ if(!empty($files)){
 	foreach($files as $file){
 		$return[] = array(
 			"name" => $file->getName(),
-			"moved" => $file->moveTo("/uploads"),
+			"moved" => $file->moveTo(realpath(dirname(__FILE__))."/upload/".$file->getName()),
 			"error" => $file->getError()
 		);
 	}
@@ -96,8 +96,8 @@ if(!empty($files)){
 				$("#tpb").fileUpload({
 					accept: "text/plain, .txt",
 					change: function(){
-						$("#tpb").fileUpload("getFileText", function(txt){
-							$("tpt").val(txt);
+						$(this).fileUpload("getFileText", function(txt){
+							$("#tpt").val(txt);
 						});
 					}
 				});
@@ -143,8 +143,8 @@ if(!empty($files)){
 						var str = "";
 						for(var i=r.length; i--;){
 							str += "File: "+r[i].name+"\n";
-							str += "Moved: "+(r[i].success?"yes":"no")+"\n";
-							if(!r[i].success) str += "Error: "+r[i].error+"\n";
+							str += "Moved: "+(r[i].moved?"yes":"no")+"\n";
+							if(!r[i].moved) str += "Error: "+r[i].error+"\n";
 							str += "----\n";
 						}
 						alert(str);

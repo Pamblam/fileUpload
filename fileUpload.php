@@ -4,7 +4,7 @@
  * fileUpload plugin for jQuery
  * -- Server side helper --
  * Do What The Fuck You Want To Public License wtfpl.org
- * Version "1.2.1"
+ * Version "1.3.0"
  */
 class fileUpload{
 	public static function getFiles(){
@@ -51,6 +51,7 @@ class uploadedFile{
 	
 	public function moveTo($newLocation){
 		set_error_handler(array($this, 'throwMoveError'));
+		$z = true;
 		try{
 			$z = move_uploaded_file($this->file['tmp_name'], $newLocation);
 		}catch(Exception $e){
@@ -58,7 +59,7 @@ class uploadedFile{
 			$z = false;
 		}
 		restore_error_handler();
-		return $z;
+		return !!$z;
 	}
 	
 	public function getContents(){
