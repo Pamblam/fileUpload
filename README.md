@@ -1,3 +1,8 @@
+
+#### This library is deprecated. Please use [file-input](https://github.com/Pamblam/file-input) instead.
+
+----
+
 ### $.fileUpload(); 
 
 v. 1.3.0
